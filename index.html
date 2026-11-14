@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0A0A0C">
+<title>Сравни × Госуслуги — прототип</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gShield" x1="10.9958" y1="1.3291" x2="10.9958" y2="23.0791" gradientUnits="userSpaceOnUse"><stop stop-color="#00E746"/><stop offset="1" stop-color="#1995BB"/></linearGradient>
+    <linearGradient id="gLock" x1="9" y1="1" x2="9" y2="19" gradientUnits="userSpaceOnUse"><stop stop-color="#3DDC5F"/><stop offset="1" stop-color="#159EA9"/></linearGradient>
+  </defs>
+</svg>
+
+<main class="app" id="app">
+
+  <!-- 1. АНКЕТА -->
+  <section class="screen scroll" data-screen="form">
+    <div class="pad">
+      <button class="back" type="button" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <div class="progress"><span style="width:25%"></span></div>
+      <p class="step">Шаг 1 из 4 · Данные</p>
+      <h1 class="h1">Паспортные<br>данные</h1>
+
+      <section class="hero">
+        <div class="hero__head">
+          <span class="tile tile--lg">
+            <svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zM7 9h4M7 13h6M15 9h2"/></svg>
+            <span class="badge"><svg viewBox="0 0 23 23"><path d="M19.33 6 8.79 16.54 4 11.75"/></svg></span>
+          </span>
+          <div>
+            <p class="hero__title">Заполним паспорт за вас</p>
+            <p class="muted">~1 минута вместо 4 · Через Госуслуги</p>
+          </div>
+        </div>
+        <button class="perks-toggle" type="button" id="perksToggle" aria-expanded="false" aria-controls="perks">
+          <span class="num-dot">3</span>
+          <span class="perks-toggle__text">Плюса входа<br>через Госуслуги</span>
+          <span class="perks-toggle__more"><span data-perks-label>показать</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="perks" id="perks" hidden>
+          <div class="bar-row"><div class="bar-row__top"><span>Через Госуслуги</span><span class="green">~1 мин</span></div><div class="bar bar--light"><span class="grad" style="width:24%"></span></div></div>
+          <div class="bar-row"><div class="bar-row__top"><span>Вручную</span><span>~4 мин</span></div><div class="bar bar--light"><span class="grey" style="width:95%"></span></div></div>
+          <div class="perk-grid">
+            <div class="perk"><span class="tile"><svg viewBox="0 0 24 24"><path d="M4 7h16v12H4zM9 7V5h6v2M4 12h16"/></svg></span><b>Без справки с работы</b></div>
+            <div class="perk"><span class="tile"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span><b>Без звонков банков</b></div>
+            <div class="perk"><span class="tile"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span><b>Анкета сохранится</b></div>
+          </div>
+        </div>
+        <button class="btn btn--primary" type="button" data-go="sheet">Заполнить через Госуслуги</button>
+      </section>
+
+      <h2 class="h2">Или заполните сами</h2>
+      <div class="fields" id="formFields"></div>
+    </div>
+  </section>
+
+  <!-- 2. ШТОРКА -->
+  <div class="sheet-layer" id="sheetLayer" hidden>
+    <button class="dim" type="button" aria-label="Закрыть" data-close-sheet></button>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <span class="grabber" aria-hidden="true"></span>
+      <h2 class="sheet__title" id="sheetTitle">Что будет дальше</h2>
+      <p class="trust"><svg width="22" height="25" viewBox="0 0 22 25" fill="none" aria-hidden="true"><path d="M10.9958 1.3291L20.6624 4.9541V12.2041C20.6624 17.6416 16.5541 22.2333 10.9958 23.0791C5.43743 22.2333 1.3291 17.6416 1.3291 12.2041V4.9541L10.9958 1.3291Z" stroke-width="2.65833" stroke-linecap="round" stroke-linejoin="round" stroke="url(#gShield)"/></svg>Оператор финплатформы · правила Банка России</p>
+      <ol class="steps" id="steps"></ol>
+      <div class="note">
+        <span class="note__icon"><svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden="true"><path d="M5 9H1V19H17V9H13M5 9H13M5 9V5C5 3.93913 5.42143 2.92172 6.17157 2.17157C6.92172 1.42143 7.93913 1 9 1C10.0609 1 11.0783 1.42143 11.8284 2.17157C12.5786 2.92172 13 3.93913 13 5V9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="url(#gLock)"/></svg></span>
+        <div><b>Вход одноразовый</b><p class="muted">Ссылка для входа живёт 5 минут. После входа доступ к данным открыт 10 минут — и закрывается сам</p></div>
+      </div>
+      <div class="two">
+        <div class="two__card two__card--take"><span class="green caps">Возьмём</span><span>Паспорт, адрес, доход</span></div>
+        <div class="two__card"><span class="muted caps">Не увидим</span><span>Пароль, счета, остальное</span></div>
+      </div>
+      <div class="stack">
+        <button class="btn btn--primary" type="button" data-go="gos">Перейти на Госуслуги</button>
+        <button class="btn btn--link muted" type="button" data-close-sheet>Назад к анкете</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ЗАГЛУШКА ГОСУСЛУГ -->
+  <section class="screen center" data-screen="gos">
+    <div class="pad pad--center">
+      <div class="stub">
+        <span class="caps muted">Заглушка для прототипа</span>
+        <h2>Здесь пользователь входит на Госуслугах</h2>
+        <p class="muted">Логин, пароль и код из СМС — чужая система. Выберите, чем закончится вход.</p>
+      </div>
+      <button class="btn btn--primary" type="button" id="loginOk">Вход прошёл успешно</button>
+      <button class="btn btn--secondary" type="button" data-go="error">Пользователь отменил вход</button>
+    </div>
+  </section>
+
+  <!-- 3. ПРОВЕРКА -->
+  <section class="screen with-footer" data-screen="check">
+    <div class="scroll" data-gate="check">
+      <div class="pad">
+        <button class="back" type="button" aria-label="Назад" data-go="sheet"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+        <div class="progress"><span style="width:50%"></span></div>
+        <p class="step">Шаг 2 из 4 · Вход через Госуслуги</p>
+        <span class="tile tile--xl"><svg viewBox="0 0 23 23"><path d="M19.33 6 8.79 16.54 4 11.75"/></svg></span>
+        <h1 class="h1 h1--sm">Вы вошли.<br>Всё верно?</h1>
+        <p class="muted lead">Дальше только согласия — и анкета готова</p>
+
+        <section class="session" data-live>
+          <div class="session__top"><span class="live-dot"></span><b>Доступ к данным открыт</b><span class="clock" data-clock>10:00</span></div>
+          <div class="bar bar--dark"><span class="grad" data-bar style="width:100%"></span></div>
+          <p>Мы можем запрашивать данные 10 минут, пока вы оформляете кредит. Потом связь с Госуслугами разорвётся сама.</p>
+          <button class="btn btn--primary btn--sm" type="button" data-end>Завершить сеанс</button>
+        </section>
+        <section class="session session--closed" data-closed hidden>
+          <svg viewBox="0 0 24 24"><path d="M4 11h16v10H4zM8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          <div><b>Сеанс завершён</b><p class="muted">Связь с Госуслугами разорвана. Данные, которые вы уже видите, остались в анкете.</p></div>
+        </section>
+
+        <div class="row-between"><h2 class="h2 h2--flush">Что мы получили</h2><span class="muted strong" data-total>19 полей</span></div>
+        <div class="groups" id="groups"></div>
+        <p class="footnote">Больше ничего: ни пароля, ни доступа к счетам, ни других данных профиля. Данные на макете — пример.</p>
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="stack" id="checkView">
+        <button class="btn btn--gated" type="button" data-gated="check" data-next="consent">Всё верно</button>
+        <button class="btn btn--link" type="button" id="startEdit"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>Изменить данные</button>
+      </div>
+      <div class="stack" id="checkEdit" hidden>
+        <button class="btn btn--primary" type="button" id="saveEdit">Сохранить исправления</button>
+        <button class="btn btn--link" type="button" id="cancelEdit">Отменить</button>
+      </div>
+    </footer>
+  </section>
+
+  <!-- 4. СОГЛАСИЯ -->
+  <section class="screen with-footer" data-screen="consent">
+    <div class="scroll" data-gate="consent">
+      <div class="pad">
+        <button class="back" type="button" aria-label="Назад" data-go="check"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+        <div class="progress"><span style="width:75%"></span></div>
+        <p class="step">Шаг 3 из 4 · Вход через Госуслуги</p>
+        <div class="pill" data-live><span class="live-dot"></span><span class="pill__text">Доступ к данным<br>открыт</span><span class="clock" data-clock>10:00</span><button class="btn btn--primary btn--xs" type="button" data-end>Завершить</button></div>
+        <div class="pill pill--closed" data-closed hidden><svg viewBox="0 0 24 24"><path d="M4 11h16v10H4zM8 11V7a4 4 0 0 1 8 0v4"/></svg>Доступ к Госуслугам закрыт</div>
+        <h1 class="h1 h1--sm">Что вы<br>подписываете</h1>
+        <p class="muted lead">8 документов — коротко. Подпись простая электронная, через Госуслуги</p>
+
+        <div class="cards">
+          <section class="acc">
+            <button class="acc__head" type="button" aria-expanded="false">
+              <span class="acc__icon"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6"/></svg></span>
+              <span class="acc__body"><b>Банки посмотрят кредитную историю</b><span class="muted">Так они дадут точное решение, а не примерное</span><span class="acc__count muted">3 документа – показать</span></span>
+              <span class="acc__chev"><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+            </button>
+            <div class="acc__panel" hidden>
+              <span>Согласие для БКИ — Сравни</span><span>Согласие для БКИ — Кредиты</span><span>Согласие для БКИ — Ипотека</span>
+            </div>
+          </section>
+          <section class="acc">
+            <button class="acc__head" type="button" aria-expanded="false">
+              <span class="acc__icon"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6"/></svg></span>
+              <span class="acc__body"><b>Правила платформы Сравни</b><span class="muted">Оператор финансовой платформы, работает по правилам Банка России. Данные защищены по 152-ФЗ</span><span class="acc__count muted">4 документа – показать</span></span>
+              <span class="acc__chev"><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+            </button>
+            <div class="acc__panel" hidden>
+              <span>Заявление на присоединение к правилам платформы</span><span>Правила финансовой платформы АО «Финансовый Маркетплейс Сравни.ру»</span><span>Правила ЭДО</span><span>Политика конфиденциальности</span>
+            </div>
+          </section>
+          <section class="card toggle-card">
+            <div><b>Присылать выгодные предложения?</b><span class="muted">Персональные ставки, акции и кэшбэк от банков.</span></div>
+            <button class="switch" type="button" role="switch" aria-checked="false" aria-label="Присылать выгодные предложения"><span></span></button>
+          </section>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <label class="checkbox"><input type="checkbox" id="agree" checked><span class="checkbox__box"><svg viewBox="0 0 23 23"><path d="M19.33 6 8.79 16.54 4 11.75"/></svg></span>Согласен с документами выше</label>
+      <button class="btn btn--gated" type="button" data-gated="consent" data-next="done">Продолжить</button>
+    </footer>
+  </section>
+
+  <!-- 5. ГОТОВО -->
+  <section class="screen with-footer" data-screen="done">
+    <div class="scroll" data-gate="done">
+      <div class="pad">
+        <button class="back" type="button" aria-label="Назад" data-go="consent"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+        <div class="progress"><span style="width:100%"></span></div>
+        <p class="step">Шаг 4 из 4 · Вход через Госуслуги</p>
+        <div class="pill" data-live><span class="live-dot"></span><span class="pill__text">Доступ к данным<br>открыт</span><span class="clock" data-clock>10:00</span><button class="btn btn--primary btn--xs" type="button" data-end>Завершить</button></div>
+        <div class="pill pill--closed" data-closed hidden><svg viewBox="0 0 24 24"><path d="M4 11h16v10H4zM8 11V7a4 4 0 0 1 8 0v4"/></svg>Доступ к Госуслугам закрыт</div>
+        <div class="done-hero">
+          <div class="ring"><span><svg viewBox="0 0 23 23"><path d="M19.33 6 8.79 16.54 4 11.75"/></svg></span></div>
+          <h1 class="h1 h1--center">Данные<br>заполнены за вас</h1>
+          <div class="chips"><span class="chip" data-total>19 полей</span><span class="chip chip--green">~4 минуты сберегли</span></div>
+        </div>
+        <section class="card list-card">
+          <div id="doneRows"></div>
+          <button class="more" type="button" id="toggleAll" aria-expanded="false">Ещё 14 полей – показать</button>
+        </section>
+      </div>
+    </div>
+    <footer class="footer">
+      <button class="btn btn--gated" type="button" data-gated="done" data-next="sent">Всё верно</button>
+    </footer>
+  </section>
+
+  <!-- 6. ЗАЯВКА ОТПРАВЛЕНА -->
+  <section class="screen otter" data-screen="sent">
+    <img class="logo" src="assets/logo.jpg" alt="Сравни">
+    <h1 class="h1">Заявка<br>отправлена!</h1>
+    <p class="muted lead">А сейчас вылетит птичка. Три, два, один...</p>
+    <div class="otter__img"><img src="assets/otter-sent.jpg" alt=""></div>
+    <p class="otter__text">Смотрите на свет.....<br>Сейчас мы забудем ваши данные</p>
+    <div class="anim-bar"><span data-anim></span></div>
+  </section>
+
+  <!-- 7. ЗАБЫЛИ -->
+  <section class="screen otter" data-screen="forgot">
+    <img class="logo" src="assets/logo.jpg" alt="Сравни">
+    <h1 class="h1">Мы уже<br>забыли вас!</h1>
+    <p class="muted lead">Какие данные? У нас их и не было!</p>
+    <div class="otter__img"><img src="assets/otter-forgot.jpg" alt=""></div>
+    <p class="otter__text">Переносим вас на главную страницу...</p>
+    <div class="anim-bar"><span data-anim></span></div>
+  </section>
+
+  <!-- 8. ОШИБКА -->
+  <section class="screen otter" data-screen="error">
+    <img class="logo" src="assets/logo.jpg" alt="Сравни">
+    <h1 class="h1">Не получилось<br>войти — ничего<br>страшного</h1>
+    <p class="muted lead">Вход прервался, но анкета на месте.<br>Попробуйте ещё раз, всё сохранилось</p>
+    <div class="otter__img"><img src="assets/otter-sad.jpg" alt=""></div>
+    <div class="stack">
+      <button class="btn btn--primary" type="button" data-go="sheet">Попробовать ещё раз</button>
+      <button class="btn btn--secondary" type="button" data-go="form">Продолжить вручную</button>
+    </div>
+  </section>
+
+</main>
+<script src="script.js"></script>
+</body>
+</html>
