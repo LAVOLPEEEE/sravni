@@ -97,8 +97,14 @@
   function renderDone() {
     const flat = [];
     GROUPS.forEach(g => g.rows.forEach(([k, label]) => flat.push([label, state.data[k]])));
-    const rows = state.showAll ? flat : flat.slice(0, 5);
-    $('#doneRows').innerHTML = rows.map(([l, v]) => `<div class="drow"><small>${esc(l)}</small><b>${esc(v)}</b></div>`).join('');
+    const row = ([l, v]) => `<div class="drow"><small>${esc(l)}</small><b>${esc(v)}</b></div>`;
+    const box = $('#doneRows');
+    if (!box.dataset.built || box.dataset.built !== JSON.stringify(state.data)) {
+      box.innerHTML = flat.slice(0, 5).map(row).join('') +
+        `<div class="collapse more-collapse" id="moreRows" inert><div class="collapse__inner">${flat.slice(5).map(row).join('')}</div></div>`;
+      box.dataset.built = JSON.stringify(state.data);
+    }
+    setCollapse($('#moreRows'), state.showAll);
     const rest = flat.length - 5;
     const btn = $('#toggleAll');
     btn.textContent = state.showAll ? 'Свернуть' : `Ещё ${rest} ${plural(rest, 'поле', 'поля', 'полей')} – показать`;
@@ -152,7 +158,7 @@
   function closeSheet() {
     if (sheetLayer.hidden || sheetLayer.classList.contains('is-closing')) return;
     sheetLayer.classList.add('is-closing');
-    timers.push(setTimeout(() => { sheetLayer.hidden = true; sheetLayer.classList.remove('is-closing'); }, 290));
+    timers.push(setTimeout(() => { sheetLayer.hidden = true; sheetLayer.classList.remove('is-closing'); }, 390));
   }
 
   function runBar(name, ms, done) {
@@ -172,8 +178,7 @@
     state.closed = false;
     state.left = SESSION_SECONDS;
     $$('#formFields input').forEach(i => { i.value = ''; });
-    const perks = $('#perks');
-    perks.hidden = true;
+    setCollapse($('#perks'), false);
     $('#perksToggle').setAttribute('aria-expanded', 'false');
     $('[data-perks-label]').textContent = 'показать';
     $$('.acc').forEach(a => setAcc(a, false));
@@ -267,12 +272,16 @@
   $('#cancelEdit').addEventListener('click', () => setEditMode(false));
 
   /* ---------- Аккордеоны и переключатели ---------- */
+  function setCollapse(el, open) {
+    el.classList.toggle('is-open', open);
+    if (open) el.removeAttribute('inert'); else el.setAttribute('inert', '');
+  }
   function setAcc(acc, open) {
     const head = $('.acc__head', acc);
     head.setAttribute('aria-expanded', String(open));
-    $('.acc__panel', acc).hidden = !open;
+    setCollapse($('.collapse', acc), open);
     const count = $('.acc__count', acc);
-    const n = $$('.acc__panel span', acc).length;
+    const n = $$('.acc__panel > a', acc).length;
     count.textContent = open ? 'скрыть документы' : `${n} ${plural(n, 'документ', 'документа', 'документов')} – показать`;
   }
   $$('.acc').forEach(acc => {
@@ -292,7 +301,7 @@
     const btn = e.currentTarget;
     const open = btn.getAttribute('aria-expanded') !== 'true';
     btn.setAttribute('aria-expanded', String(open));
-    $('#perks').hidden = !open;
+    setCollapse($('#perks'), open);
     $('[data-perks-label]').textContent = open ? 'скрыть' : 'показать';
   });
 
