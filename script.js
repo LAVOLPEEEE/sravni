@@ -388,35 +388,8 @@
     if (el) checkFit(el);
   });
 
-  /* ---------- Главная с предложениями ---------- */
-  const OFFERS = [
-    { n: 'Банк-партнёр А', l: 'А', c: 'linear-gradient(180deg,#FF6B5A,#E8382B)', sum: 'до 1 млн ₽', rate: 'от 19,9%', pay: '~26 400 ₽', tags: ['Без залога', 'Досрочно без штрафов'], badge: 'Высокий шанс', k: ['cash'] },
-    { n: 'Банк-партнёр Б', l: 'Б', c: 'linear-gradient(180deg,#FFD84D,#F2B705)', sum: 'до 800 тыс. ₽', rate: 'от 21,5%', pay: '~21 900 ₽', tags: ['Без справки о доходах'], badge: '', k: ['cash', 'nocert'] },
-    { n: 'Банк-партнёр В', l: 'В', c: 'linear-gradient(180deg,#5AA9FF,#1F6FE5)', sum: 'до 1,5 млн ₽', rate: 'от 18,4%', pay: '~38 200 ₽', tags: ['Рефинансирование', 'Онлайн'], badge: '', k: ['refi'] }
-  ];
-  function renderOffers(filter) {
-    const list = OFFERS.filter(o => filter === 'all' || o.k.includes(filter));
-    $('#offers').innerHTML = list.map((o, i) => `
-      <article class="offer" style="animation-delay:${i * 80}ms">
-        <div class="offer__head"><span class="offer__logo" style="background:${o.c}">${o.l}</span><div><b>${o.n}</b><small>Кредит наличными</small></div>${o.badge ? `<span class="offer__badge">${o.badge}</span>` : ''}</div>
-        <div class="offer__grid"><div><small>Сумма</small><b>${o.sum}</b></div><div><small>Ставка</small><b>${o.rate}</b></div><div><small>Платёж/мес</small><b>${o.pay}</b></div></div>
-        <div class="offer__tags">${o.tags.map(t => `<span>${t}</span>`).join('')}</div>
-        <div class="offer__actions"><button class="btn btn--secondary" type="button">Подробнее</button><button class="btn btn--primary" type="button">Оформить</button></div>
-      </article>`).join('');
-    nbspify($('#offers'));
-  }
-  const FILTERS = ['all', 'cash', 'nocert', 'refi'];
-  $$('.fchip').forEach((chip, i) => {
-    chip.addEventListener('click', () => {
-      $$('.fchip').forEach(c => { c.classList.remove('is-active'); c.setAttribute('aria-selected', 'false'); });
-      chip.classList.add('is-active'); chip.setAttribute('aria-selected', 'true');
-      renderOffers(FILTERS[i]);
-    });
-  });
-  renderOffers('all');
   document.addEventListener('click', e => {
     if (e.target.closest('[data-restart]')) reset();
-    if (e.target.closest('[data-noop]')) e.preventDefault();
   });
 
   /* ---------- Типографика: короткие слова не висят в конце строки ---------- */
