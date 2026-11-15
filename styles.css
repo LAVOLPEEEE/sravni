@@ -192,7 +192,7 @@ p { margin: 0; }
 .perk-grid { container-type: inline-size; }
 .perk { min-width: 0; background: #26302A; border: 1px solid #3A453D; border-radius: 14px; padding: 8px 7px 12px; display: flex; flex-direction: column; gap: 10px; min-height: 104px; }
 .perk b { font-size: clamp(10px, 3.2vw, 15px); font-size: clamp(10px, calc(5cqi - 3px), 15px); line-height: 1.2; hyphens: none; -webkit-hyphens: none; }
-.perk b span { display: block; white-space: nowrap; }
+.perk b span { white-space: nowrap; }
 .perk .tile { width: clamp(34px, 10vw, 40px); height: clamp(34px, 10vw, 40px); }
 
 .btn--continue { margin-top: 24px; }
