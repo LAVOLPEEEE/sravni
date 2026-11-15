@@ -160,7 +160,7 @@ p { margin: 0; }
 
 /* ===== Карточка «Заполним за вас» ===== */
 .hero {
-  margin-top: 22px; border-radius: 24px; padding: 20px 20px 22px; display: flex; flex-direction: column; gap: 16px;
+  margin-top: 22px; border-radius: 24px; padding: 20px clamp(14px, 4.5vw, 20px) 22px; display: flex; flex-direction: column; gap: 16px;
   border: 1.5px solid transparent;
   background: linear-gradient(var(--green-card), var(--green-card)) padding-box, linear-gradient(135deg, #07EA14, #19C3E6) border-box;
 }
@@ -189,8 +189,10 @@ p { margin: 0; }
 .grad { background: var(--grad); }
 .grey { background: var(--muted); }
 .perk-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.perk { min-width: 0; background: #26302A; border: 1px solid #3A453D; border-radius: 14px; padding: 8px clamp(6px, 2vw, 8px) 12px; display: flex; flex-direction: column; gap: 10px; min-height: 104px; }
-.perk b { font-size: clamp(12px, 3.4vw, 15px); line-height: 1.2; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
+.perk-grid { container-type: inline-size; }
+.perk { min-width: 0; background: #26302A; border: 1px solid #3A453D; border-radius: 14px; padding: 8px 7px 12px; display: flex; flex-direction: column; gap: 10px; min-height: 104px; }
+.perk b { font-size: clamp(10px, 3.2vw, 15px); font-size: clamp(10px, calc(5cqi - 3px), 15px); line-height: 1.2; hyphens: none; -webkit-hyphens: none; }
+.perk b span { display: block; white-space: nowrap; }
 .perk .tile { width: clamp(34px, 10vw, 40px); height: clamp(34px, 10vw, 40px); }
 
 .btn--continue { margin-top: 24px; }
