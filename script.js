@@ -57,7 +57,8 @@
     session: false,
     closed: false,
     left: SESSION_SECONDS,
-    showAll: false
+    showAll: false,
+    mode: 'gos' // 'gos' — через Госуслуги, 'manual' — вручную
   };
   let timers = [];
 
@@ -75,10 +76,10 @@
 
   /* ---------- Отрисовка статичных списков ---------- */
   $('#formFields').innerHTML = FIELDS.map(([label, ph], i) =>
-    `<label class="field" for="f${i}">${esc(label)}<input id="f${i}" type="text" placeholder="${esc(ph)}" autocomplete="off"></label>`).join('');
+    `<label class="field" for="f${i}">${esc(label)}<input id="f${i}" type="text" placeholder="${esc(ph)}" autocomplete="off"><span class="field__err">Заполните это поле</span></label>`).join('');
 
   $('#manualFields').innerHTML = MANUAL_FIELDS.map(([label, ph], i) =>
-    `<label class="field" for="m${i}">${esc(label)}<input id="m${i}" type="text" placeholder="${esc(ph)}" autocomplete="off"></label>`).join('');
+    `<label class="field" for="m${i}">${esc(label)}<input id="m${i}" type="text" placeholder="${esc(ph)}" autocomplete="off"><span class="field__err">Заполните это поле</span></label>`).join('');
 
   $('#steps').innerHTML = STEPS.map(([t, d, w], i) => {
     const last = i === STEPS.length - 1;
@@ -103,15 +104,24 @@
       </section>`).join('');
   }
 
+  function manualRows() {
+    const rows = [];
+    FIELDS.forEach(([label], i) => rows.push([label, $(`#f${i}`).value.trim() || 'Не заполнено']));
+    MANUAL_FIELDS.forEach(([label], i) => rows.push([label, $(`#m${i}`).value.trim() || 'Не заполнено']));
+    return rows;
+  }
+
   function renderDone() {
-    const flat = [];
-    GROUPS.forEach(g => g.rows.forEach(([k, label]) => flat.push([label, state.data[k]])));
+    let flat = [];
+    if (state.mode === 'manual') flat = manualRows();
+    else GROUPS.forEach(g => g.rows.forEach(([k, label]) => flat.push([label, state.data[k]])));
     const row = ([l, v]) => `<div class="drow"><small>${esc(l)}</small><b>${esc(v)}</b></div>`;
     const box = $('#doneRows');
-    if (!box.dataset.built || box.dataset.built !== JSON.stringify(state.data)) {
+    const key = JSON.stringify(flat);
+    if (box.dataset.built !== key) {
       box.innerHTML = flat.slice(0, 5).map(row).join('') +
         `<div class="collapse more-collapse" id="moreRows" inert><div class="collapse__inner">${flat.slice(5).map(row).join('')}</div></div>`;
-      box.dataset.built = JSON.stringify(state.data);
+      box.dataset.built = key;
     }
     setCollapse($('#moreRows'), state.showAll);
     const rest = flat.length - 5;
@@ -249,8 +259,10 @@
     const sw = $('.switch'); sw.setAttribute('aria-checked', 'false');
     $('#agree').checked = false;
     $$('#manualFields input').forEach(i => { i.value = ''; });
+    $$('.field.is-error').forEach(f => f.classList.remove('is-error'));
+    Object.keys(REQ).forEach(key => updateReq(key, false));
     setEditMode(false);
-    paintSession();
+    setMode('gos');
     go('form');
   }
 
@@ -308,8 +320,9 @@
     const ss = String(state.left % 60).padStart(2, '0');
     $$('[data-clock]').forEach(el => { el.textContent = `${mm}:${ss}`; });
     $$('[data-bar]').forEach(el => { el.style.width = `${(state.left / SESSION_SECONDS) * 100}%`; });
-    $$('[data-live]').forEach(el => { el.hidden = state.closed; });
-    $$('[data-closed]').forEach(el => { el.hidden = !state.closed; });
+    const manual = state.mode === 'manual';
+    $$('[data-live]').forEach(el => { el.hidden = manual || state.closed; });
+    $$('[data-closed]').forEach(el => { el.hidden = manual || !state.closed; });
   }
   setInterval(() => {
     if (!state.session || state.closed) return;
@@ -379,7 +392,57 @@
     if (e.target.closest('[data-close-sheet]')) { closeSheet(); return; }
     if (e.target.closest('[data-end]')) endSession();
   });
-  $('#loginOk').addEventListener('click', () => { startSession(); setEditMode(false); go('check'); });
+  /* Два сценария: через Госуслуги и вручную — разные тексты на согласиях и «Готово» */
+  function setMode(mode) {
+    state.mode = mode;
+    const manual = mode === 'manual';
+    $('[data-screen="consent"] .step').textContent = manual ? 'Шаг 3 из 4 · Согласия' : 'Шаг 3 из 4 · Вход через Госуслуги';
+    $('[data-screen="done"] .step').textContent = manual ? 'Шаг 4 из 4 · Проверка' : 'Шаг 4 из 4 · Вход через Госуслуги';
+    $('[data-consent-lead]').textContent = manual ? '8 документов — коротко. Подпись простая электронная' : '8 документов — коротко. Подпись простая электронная, через Госуслуги';
+    $('[data-done-title]').innerHTML = manual ? 'Анкета<br>заполнена' : 'Данные<br>заполнены за\u00A0вас';
+    $$('[data-gos-only]').forEach(el => { el.hidden = manual; });
+    $('[data-screen="consent"] .back').dataset.go = manual ? 'manual2' : 'check';
+    $('[data-gated="done"]').dataset.next = manual ? 'sentManual' : 'sent';
+    paintSession();
+  }
+  /* ---------- Обязательные поля при ручном вводе ---------- */
+  const REQ = { form: '#formFields', manual2: '#manualFields' };
+  function reqInputs(key) { return $$(`${REQ[key]} input`); }
+  function updateReq(key, warn) {
+    const inputs = reqInputs(key);
+    const empty = inputs.filter(i => !i.value.trim());
+    const btn = $(`[data-req="${key}"]`);
+    const hint = $(`[data-req-hint="${key}"]`);
+    btn.classList.toggle('is-ready', empty.length === 0);
+    btn.setAttribute('aria-disabled', String(empty.length > 0));
+    hint.textContent = empty.length === 0 ? 'Все поля заполнены'
+      : `Осталось заполнить: ${empty.length} ${plural(empty.length, 'поле', 'поля', 'полей')}`;
+    hint.classList.toggle('is-warn', !!warn && empty.length > 0);
+    return empty;
+  }
+  Object.keys(REQ).forEach(key => {
+    reqInputs(key).forEach(input => {
+      input.addEventListener('input', () => {
+        if (input.value.trim()) input.closest('.field').classList.remove('is-error');
+        updateReq(key, $(`[data-req-hint="${key}"]`).classList.contains('is-warn'));
+      });
+    });
+    $(`[data-req="${key}"]`).addEventListener('click', e => {
+      const btn = e.currentTarget;
+      const empty = updateReq(key, true);
+      if (empty.length) {
+        empty.forEach(i => i.closest('.field').classList.add('is-error'));
+        btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake');
+        empty[0].closest('.field').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => empty[0].focus({ preventScroll: true }), 450);
+        return;
+      }
+      if (key === 'form') go('manual2');
+      else { setMode('manual'); go('consent'); }
+    });
+    updateReq(key, false);
+  });
+  $('#loginOk').addEventListener('click', () => { setMode('gos'); startSession(); setEditMode(false); go('check'); });
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && !sheetLayer.hidden) closeSheet();

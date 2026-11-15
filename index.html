@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#0A0A0C">
 <title>Сравни × Госуслуги — прототип</title>
-<link rel="stylesheet" href="styles.css?v=20261115c">
+<link rel="stylesheet" href="styles.css?v=20261115e">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -55,7 +55,8 @@
 
       <h2 class="h2">Или заполните сами</h2>
       <div class="fields" id="formFields"></div>
-      <button class="btn btn--primary btn--continue" type="button" data-go="manual2">Продолжить</button>
+      <p class="req-hint" data-req-hint="form" aria-live="polite"></p>
+      <button class="btn btn--req" type="button" data-req="form" aria-disabled="true">Продолжить</button>
     </div>
   </section>
 
@@ -78,7 +79,8 @@
       </section>
       <h2 class="h2">Или продолжите сами</h2>
       <div class="fields" id="manualFields"></div>
-      <button class="btn btn--primary btn--continue" type="button" data-go="sentManual">Продолжить</button>
+      <p class="req-hint" data-req-hint="manual2" aria-live="polite"></p>
+      <button class="btn btn--req" type="button" data-req="manual2" aria-disabled="true">Продолжить</button>
     </div>
   </section>
 
@@ -167,7 +169,7 @@
         <div class="pill" data-live><span class="live-dot"></span><span class="pill__text">Доступ к данным<br>открыт</span><span class="clock" data-clock>10:00</span><button class="btn btn--primary btn--xs" type="button" data-end>Завершить</button></div>
         <div class="pill pill--closed" data-closed hidden><svg viewBox="0 0 24 24"><path d="M4 11h16v10H4zM8 11V7a4 4 0 0 1 8 0v4"/></svg>Доступ к Госуслугам закрыт</div>
         <h1 class="h1 h1--sm">Что вы<br>подписываете</h1>
-        <p class="muted lead">8 документов — коротко. Подпись простая электронная, через Госуслуги</p>
+        <p class="muted lead" data-consent-lead>8 документов — коротко. Подпись простая электронная, через Госуслуги</p>
 
         <div class="cards">
           <section class="acc">
@@ -215,8 +217,8 @@
         <div class="pill pill--closed" data-closed hidden><svg viewBox="0 0 24 24"><path d="M4 11h16v10H4zM8 11V7a4 4 0 0 1 8 0v4"/></svg>Доступ к Госуслугам закрыт</div>
         <div class="done-hero">
           <div class="ring"><span><svg viewBox="0 0 23 23"><path d="M19.33 6 8.79 16.54 4 11.75"/></svg></span></div>
-          <h1 class="h1 h1--center">Данные<br>заполнены за вас</h1>
-          <div class="chips"><span class="chip" data-total>19 полей</span><span class="chip chip--green">~4 минуты сберегли</span></div>
+          <h1 class="h1 h1--center" data-done-title>Данные<br>заполнены за вас</h1>
+          <div class="chips"><span class="chip" data-total>19 полей</span><span class="chip chip--green" data-gos-only>~4 минуты сберегли</span></div>
         </div>
         <section class="card list-card">
           <div id="doneRows"></div>
@@ -285,6 +287,6 @@
   <div class="flash" id="flash" aria-hidden="true"></div>
   <div class="whiteout" id="whiteout" aria-hidden="true"></div>
 </main>
-<script src="script.js?v=20261115c"></script>
+<script src="script.js?v=20261115e"></script>
 </body>
 </html>

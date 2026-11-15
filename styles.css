@@ -207,6 +207,22 @@ p { margin: 0; }
 .field:focus-within { border-color: #19C3E6; box-shadow: 0 0 0 1px #07EA14; background: #18191B; }
 .field input { border: none; outline: none; padding: 0; background: transparent; font: inherit; font-size: 20px; color: var(--text); width: 100%; }
 .field input::placeholder { color: #4A4A52; }
+.field__err { display: none; font-size: 13px; font-weight: 500; color: #FF6B6B; }
+.field.is-error { border-color: #FF5A5F; background: #1C1415; }
+.field.is-error .field__err { display: block; animation: fadeIn .3s ease both; }
+.field.is-error:focus-within { border-color: #FF5A5F; box-shadow: 0 0 0 1px #FF5A5F; }
+
+/* Кнопка «Продолжить», пока не заполнены все поля */
+.req-hint { margin: 20px 4px 12px; min-height: 20px; font-size: 15px; color: var(--muted); transition: color .3s ease; }
+.req-hint.is-warn { color: #FF8A8A; }
+.btn--req { background-color: #2A2A2E; color: #6E6E76; transition: background-color .5s ease, color .5s ease, transform .2s ease, box-shadow .4s ease; }
+.btn--req:hover { background-color: #333338; color: #8A8A92; }
+.btn--req.is-ready { background-color: var(--text); color: var(--bg); }
+.btn--req::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--grad-btn); opacity: 0; transition: opacity .45s ease; }
+.btn--req.is-ready:hover { background-color: var(--text); box-shadow: 0 10px 30px rgba(7, 234, 20, .22); }
+.btn--req.is-ready:hover::before { opacity: 1; }
+.btn--req.shake { animation: shake .45s ease; }
+@keyframes shake { 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
 
 /* ===== Шторка ===== */
 .sheet-layer { position: absolute; inset: 0; z-index: 10; }
