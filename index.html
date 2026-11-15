@@ -55,6 +55,30 @@
 
       <h2 class="h2">Или заполните сами</h2>
       <div class="fields" id="formFields"></div>
+      <button class="btn btn--primary btn--continue" type="button" data-go="manual2">Продолжить</button>
+    </div>
+  </section>
+
+  <!-- 1.2 РУЧНОЙ ВВОД, ШАГ 2 -->
+  <section class="screen scroll" data-screen="manual2">
+    <div class="pad">
+      <button class="back" type="button" aria-label="Назад" data-go="form"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <div class="progress"><span style="width:50%"></span></div>
+      <p class="step">Шаг 2 из 4 · Данные</p>
+      <h1 class="h1 h1--sm">Адрес, контакты<br>и доход</h1>
+      <section class="hero hero--compact">
+        <div class="hero__head">
+          <span class="tile tile--lg"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2"/></svg></span>
+          <div>
+            <p class="hero__title">Впереди ещё 11 полей</p>
+            <p class="muted">Через Госуслуги заполним все 19 за минуту — и покажем, что получили</p>
+          </div>
+        </div>
+        <button class="btn btn--primary" type="button" data-go="sheet">Заполнить через Госуслуги</button>
+      </section>
+      <h2 class="h2">Или продолжите сами</h2>
+      <div class="fields" id="manualFields"></div>
+      <button class="btn btn--primary btn--continue" type="button" data-go="sent">Продолжить</button>
     </div>
   </section>
 
@@ -108,7 +132,7 @@
         <section class="session" data-live>
           <div class="session__top"><span class="live-dot"></span><b>Доступ к данным открыт</b><span class="clock" data-clock>10:00</span></div>
           <div class="bar bar--dark"><span class="grad" data-bar style="width:100%"></span></div>
-          <p>Мы можем запрашивать данные 10 минут, пока вы оформляете кредит. Потом связь с Госуслугами разорвётся сама.</p>
+          <p>Мы можем запрашивать данные 10 минут, пока вы заполняете анкету. Потом доступ закроется сам: входа в ваш аккаунт Госуслуг у Сравни не останется, и повторно запросить данные без вас мы не сможем.</p>
           <button class="btn btn--primary btn--sm" type="button" data-end>Завершить сеанс</button>
         </section>
         <section class="session session--closed" data-closed hidden>
@@ -175,7 +199,7 @@
       </div>
     </div>
     <footer class="footer">
-      <label class="checkbox"><input type="checkbox" id="agree" checked><span class="checkbox__box"><svg viewBox="0 0 23 23"><path d="M19.33 6 8.79 16.54 4 11.75"/></svg></span>Согласен с документами выше</label>
+      <label class="checkbox"><input type="checkbox" id="agree"><span class="checkbox__box"><svg viewBox="0 0 23 23"><path d="M19.33 6 8.79 16.54 4 11.75"/></svg></span>Согласен с документами выше</label>
       <button class="btn btn--gated" type="button" data-gated="consent" data-next="done">Продолжить</button>
     </footer>
   </section>
@@ -237,6 +261,8 @@
     </div>
   </section>
 
+  <div class="flash" id="flash" aria-hidden="true"></div>
+  <div class="whiteout" id="whiteout" aria-hidden="true"></div>
 </main>
 <script src="script.js"></script>
 </body>

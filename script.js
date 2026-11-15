@@ -8,6 +8,12 @@
     ['Кем выдан', 'Как в паспорте'], ['ФИО', 'Ваше ФИО'], ['Дата рождения', 'ДД.ММ.ГГ'],
     ['Место рождения', 'Как в паспорте'], ['Адрес регистрации', 'Город, улица, дом']
   ];
+  const MANUAL_FIELDS = [
+    ['Пол', 'Женский / Мужской'], ['Гражданство', 'Российская Федерация'], ['Регион и город', 'Начните вводить'],
+    ['Улица, дом, квартира', 'Как в прописке'], ['Индекс', '000000'], ['Телефон', '+7 000 000-00-00'],
+    ['Электронная почта', 'mail@example.ru'], ['СНИЛС', '000-000-000 00'], ['ИНН', '12 цифр'],
+    ['Работодатель', 'Название организации'], ['Средний доход в месяц', '₽']
+  ];
   const STEPS = [
     ['Вход', 'Логин и пароль от Госуслуг', 'Госуслуги'],
     ['Код из СМС', 'Подтверждаете, что это вы', 'Госуслуги'],
@@ -71,9 +77,12 @@
   $('#formFields').innerHTML = FIELDS.map(([label, ph], i) =>
     `<label class="field" for="f${i}">${esc(label)}<input id="f${i}" type="text" placeholder="${esc(ph)}" autocomplete="off"></label>`).join('');
 
+  $('#manualFields').innerHTML = MANUAL_FIELDS.map(([label, ph], i) =>
+    `<label class="field" for="m${i}">${esc(label)}<input id="m${i}" type="text" placeholder="${esc(ph)}" autocomplete="off"></label>`).join('');
+
   $('#steps').innerHTML = STEPS.map(([t, d, w], i) => {
     const last = i === STEPS.length - 1;
-    return `<li><div class="steps__rail"><span class="steps__num${last ? ' steps__num--last' : ''}">${i + 1}</span>${last ? '' : '<span class="steps__line"></span>'}</div>
+    return `<li><div class="steps__rail"><span class="steps__num">${i + 1}</span>${last ? '' : '<span class="steps__line"></span>'}</div>
       <div class="steps__body"><div class="steps__top"><b>${t}</b><span>${w}</span></div><span>${d}</span></div></li>`;
   }).join('');
 
@@ -140,12 +149,12 @@
 
     if (name === 'check') renderGroups();
     if (name === 'done') { state.showAll = false; renderDone(); }
-    if (name === 'sent') { endSession(); runBar('sent', 4000, () => go('forgot')); }
+    if (name === 'sent') { endSession(); runBar('sent', 4000, flashOut); }
     if (name === 'forgot') runBar('forgot', 3000, reset);
   }
 
   function openSheet() {
-    if (state.screen !== 'form') { state.screen = 'form'; show('form'); }
+    if (state.screen !== 'form' && state.screen !== 'manual2') { state.screen = 'form'; show('form'); }
     sheetLayer.classList.remove('is-closing');
     sheetLayer.hidden = false;
     const sheet = $('.sheet', sheetLayer);
@@ -153,11 +162,27 @@
     // перезапуск анимации
     sheet.style.animation = 'none'; void sheet.offsetWidth; sheet.style.animation = '';
     $('[data-go="gos"]', sheetLayer).focus({ preventScroll: true });
+    playSteps();
+  }
+
+  /* Шаги в шторке загораются по очереди */
+  let stepTimers = [];
+  function playSteps() {
+    stepTimers.forEach(clearTimeout); stepTimers = [];
+    const items = $$('#steps li');
+    items.forEach(li => li.classList.remove('is-on', 'is-current', 'is-passed'));
+    items.forEach((li, i) => {
+      stepTimers.push(setTimeout(() => {
+        if (i > 0) { items[i - 1].classList.remove('is-current'); items[i - 1].classList.add('is-passed'); }
+        li.classList.add('is-on', 'is-current');
+      }, 500 + i * 2700));
+    });
   }
 
   function closeSheet() {
     if (sheetLayer.hidden || sheetLayer.classList.contains('is-closing')) return;
     sheetLayer.classList.add('is-closing');
+    stepTimers.forEach(clearTimeout); stepTimers = [];
     timers.push(setTimeout(() => { sheetLayer.hidden = true; sheetLayer.classList.remove('is-closing'); }, 390));
   }
 
@@ -169,6 +194,42 @@
     bar.style.transition = `width ${ms}ms linear`;
     requestAnimationFrame(() => { bar.style.width = '100%'; });
     timers.push(setTimeout(done, ms + 300));
+  }
+
+  /* Сияшка: лампочка сжимается, потом заливает экран белым */
+  function flashOut() {
+    const app = $('#app');
+    const img = $('[data-screen="sent"] .otter__img img');
+    const flash = $('#flash');
+    const white = $('#whiteout');
+    const a = app.getBoundingClientRect();
+    const r = img.getBoundingClientRect();
+    const nw = img.naturalWidth || 800, nh = img.naturalHeight || 920;
+    const s = Math.min(r.width / nw, r.height / nh);
+    const x = r.left - a.left + (r.width - nw * s) / 2 + 0.8225 * nw * s;
+    const y = r.top - a.top + (r.height - nh * s) / 2 + 0.2674 * nh * s;
+    flash.getAnimations().forEach(x => x.cancel());
+    white.getAnimations().forEach(x => x.cancel());
+    flash.style.left = x + 'px';
+    flash.style.top = y + 'px';
+    const T = 'translate(-50%, -50%)';
+    const grow = Math.ceil(Math.hypot(a.width, a.height) / 110 * 2.4);
+    const anim = flash.animate([
+      { transform: `${T} scale(1)`, opacity: 0, offset: 0 },
+      { transform: `${T} scale(1.15)`, opacity: 1, offset: 0.12 },
+      { transform: `${T} scale(.22)`, opacity: 1, offset: 0.42 },
+      { transform: `${T} scale(.22)`, opacity: 1, offset: 0.5 },
+      { transform: `${T} scale(${grow})`, opacity: 1, offset: 1 }
+    ], { duration: 1700, easing: 'cubic-bezier(.55, 0, .45, 1)', fill: 'forwards' });
+    white.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 350, delay: 1450, fill: 'forwards' });
+    timers.push(setTimeout(() => {
+      go('forgot');
+      flash.getAnimations().forEach(x => x.cancel());
+      white.getAnimations().forEach(x => x.cancel());
+      white.style.opacity = '1';
+      white.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-out' }).finished.then(() => { white.style.opacity = '0'; });
+    }, 1900));
+    return anim;
   }
 
   function reset() {
@@ -183,7 +244,8 @@
     $('[data-perks-label]').textContent = 'показать';
     $$('.acc').forEach(a => setAcc(a, false));
     const sw = $('.switch'); sw.setAttribute('aria-checked', 'false');
-    $('#agree').checked = true;
+    $('#agree').checked = false;
+    $$('#manualFields input').forEach(i => { i.value = ''; });
     setEditMode(false);
     paintSession();
     go('form');
