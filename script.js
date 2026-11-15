@@ -206,15 +206,17 @@
     const a = app.getBoundingClientRect();
     const r = img.getBoundingClientRect();
     const nw = img.naturalWidth || 800, nh = img.naturalHeight || 920;
-    const s = Math.min(r.width / nw, r.height / nh);
-    const x = r.left - a.left + (r.width - nw * s) / 2 + 0.8225 * nw * s;
-    const y = r.top - a.top + (r.height - nh * s) / 2 + 0.2674 * nh * s;
+    const k = a.width / W; // текущий масштаб макета
+    const rw = r.width / k, rh = r.height / k;
+    const s = Math.min(rw / nw, rh / nh);
+    const x = (r.left - a.left) / k + (rw - nw * s) / 2 + 0.8225 * nw * s;
+    const y = (r.top - a.top) / k + (rh - nh * s) / 2 + 0.2674 * nh * s;
     flash.getAnimations().forEach(x => x.cancel());
     white.getAnimations().forEach(x => x.cancel());
     flash.style.left = x + 'px';
     flash.style.top = y + 'px';
     const T = 'translate(-50%, -50%)';
-    const grow = Math.ceil(Math.hypot(a.width, a.height) / 110 * 2.4);
+    const grow = Math.ceil(Math.hypot(W, a.height / k) / 110 * 2.4);
     const anim = flash.animate([
       { transform: `${T} scale(1)`, opacity: 0, offset: 0 },
       { transform: `${T} scale(1.15)`, opacity: 1, offset: 0.12 },
@@ -406,6 +408,32 @@
     });
   }
   nbspify($('#app'));
+
+  /* ---------- Масштаб под экран ---------- */
+  const W = 440, H = 956;
+  function fit() {
+    const app = $('#app');
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const phone = vw < 600 && vh > vw * 1.2;
+    let s, h, x, y;
+    if (phone) {
+      // телефон: макет во всю ширину, высота — сколько поместится
+      s = vw / W; h = vh / s; x = 0; y = 0;
+    } else {
+      // компьютер, планшет, телефон боком: телефонная рамка по центру
+      s = Math.min(1, (vh - 40) / H, (vw - 40) / W); h = H;
+      x = (vw - W * s) / 2; y = (vh - H * s) / 2;
+    }
+    app.classList.toggle('is-framed', !phone);
+    app.style.setProperty('--app-s', s);
+    app.style.setProperty('--app-h', h + 'px');
+    app.style.setProperty('--app-x', x + 'px');
+    app.style.setProperty('--app-y', y + 'px');
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', () => setTimeout(fit, 200));
 
   /* ---------- Старт ---------- */
   paintSession();
