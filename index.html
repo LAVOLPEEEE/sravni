@@ -78,7 +78,7 @@
       </section>
       <h2 class="h2">Или продолжите сами</h2>
       <div class="fields" id="manualFields"></div>
-      <button class="btn btn--primary btn--continue" type="button" data-go="sent">Продолжить</button>
+      <button class="btn btn--primary btn--continue" type="button" data-go="sentManual">Продолжить</button>
     </div>
   </section>
 
@@ -247,6 +247,55 @@
     <div class="otter__img"><img src="assets/otter-forgot.jpg" alt=""></div>
     <p class="otter__text">Переносим вас на главную страницу...</p>
     <div class="anim-bar"><span data-anim></span></div>
+  </section>
+
+  <!-- 7.2 ЗАЯВКА ОТПРАВЛЕНА (ручной ввод) -->
+  <section class="screen otter" data-screen="sentManual">
+    <img class="logo" src="assets/logo.jpg" alt="Сравни">
+    <h1 class="h1">Заявка<br>отправлена!</h1>
+    <div class="otter__img"><img src="assets/otter-money.jpg" alt=""></div>
+    <p class="otter__text">Загружаем лучшие условия для вас...</p>
+    <div class="anim-bar"><span data-anim></span></div>
+  </section>
+
+  <!-- 9. ГЛАВНАЯ: ПРЕДЛОЖЕНИЯ -->
+  <section class="screen scroll" data-screen="offers">
+    <div class="pad">
+      <div class="topbar">
+        <img class="logo" src="assets/logo.jpg" alt="Сравни">
+        <button class="restart" type="button" data-restart><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>Заново</button>
+      </div>
+      <h1 class="h1 h1--sm">Лучшие предложения для вас</h1>
+      <p class="muted lead">Банки рассматривают вашу заявку. Пока посмотрите, что ещё может подойти</p>
+
+      <section class="status">
+        <div class="status__head"><span class="live-dot"></span><b>Заявка на рассмотрении</b></div>
+        <p class="muted">Кредит наличными · 1&nbsp;000&nbsp;000&nbsp;₽ · 5&nbsp;лет</p>
+        <ol class="status__steps">
+          <li class="is-done"><span></span>Отправлена</li>
+          <li class="is-now"><span></span>Рассматривают</li>
+          <li><span></span>Решение</li>
+        </ol>
+      </section>
+
+      <div class="chips-row" role="tablist" aria-label="Фильтр предложений">
+        <button class="fchip is-active" type="button" role="tab" aria-selected="true">Все</button>
+        <button class="fchip" type="button" role="tab" aria-selected="false">Наличными</button>
+        <button class="fchip" type="button" role="tab" aria-selected="false">Без справки</button>
+        <button class="fchip" type="button" role="tab" aria-selected="false">Рефинансирование</button>
+      </div>
+
+      <div class="offers" id="offers"></div>
+      <p class="footnote">Условия на макете — пример. Точные ставки банки покажут после рассмотрения заявки.</p>
+
+      <h2 class="h2">Ещё на Сравни</h2>
+      <div class="more-grid">
+        <a class="more-tile" href="#" data-noop><span class="tile"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3zM3 10h18M7 15h4"/></svg></span><b>Кредитные карты</b></a>
+        <a class="more-tile" href="#" data-noop><span class="tile"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v10M9 10h4.5a1.5 1.5 0 0 1 0 3H9"/></svg></span><b>Вклады</b></a>
+        <a class="more-tile" href="#" data-noop><span class="tile"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/></svg></span><b>Страхование</b></a>
+      </div>
+      <button class="btn btn--secondary btn--continue" type="button" data-restart>Пройти прототип заново</button>
+    </div>
   </section>
 
   <!-- 8. ОШИБКА -->
